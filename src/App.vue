@@ -1,13 +1,13 @@
 <script setup>
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import HelloWorld from './components/HelloWorld.vue';
+import HiddenDangerRectification from './components/HiddenDangerRectification.vue';
 import BasicHeader from './components/BasicHeader.vue';
 </script>
 
 <template>
   <BasicHeader />
-  <HelloWorld />
+  <HiddenDangerRectification />
 </template>
 
 <style scoped>
@@ -21,5 +21,11 @@ import BasicHeader from './components/BasicHeader.vue';
 }
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
+}
+</style>
+
+<style>
+body {
+  padding: 40px;
 }
 </style>
