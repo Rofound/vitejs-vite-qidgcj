@@ -73,6 +73,7 @@ function getTableData() {
 
 function handleCellStyle({ row, column, rowIndex, columnIndex }) {
   if (column.property === 'finishRate') {
+    // 处理整改率字体颜色
     if (row[column.property] < 100) {
       return {
         color: 'red',
