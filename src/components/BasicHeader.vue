@@ -1,5 +1,7 @@
 <script setup>
-import { ref, onMounted, nextTick } from 'vue';
+defineProps({
+  title: String,
+});
 </script>
 
 <template>
@@ -7,7 +9,7 @@ import { ref, onMounted, nextTick } from 'vue';
     <img
       src="https://avic-paixiu-2019.oss-cn-shenzhen.aliyuncs.com/upload/20221115/18ef6e1fbf3a4164059ac9f72ba68998.png"
     />
-    <span>六、隐患整改</span>
+    <span>{{ title }}</span>
   </div>
 </template>
 

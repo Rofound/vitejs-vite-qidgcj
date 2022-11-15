@@ -1,10 +1,5 @@
 <script setup>
-import { ref, onMounted, nextTick } from 'vue';
-// import { ElTable } from 'element-plus';
-
-defineProps({
-  msg: String,
-});
+import { ref, nextTick } from 'vue';
 
 const months = getMonths();
 const tableData = ref(null);
@@ -12,7 +7,6 @@ const table = ref(null);
 
 getTableData();
 
-onMounted(() => {});
 function getMonths() {
   const monthsForChinese = [
     '一',
@@ -88,8 +82,6 @@ function formatterFinishRate(row, column, cellValue, index) {
 </script>
 
 <template>
-  <h1>{{ msg }}</h1>
-
   <ElTable
     ref="table"
     :data="tableData"
@@ -99,7 +91,7 @@ function formatterFinishRate(row, column, cellValue, index) {
   >
     <el-table-column
       label="检查单位"
-      width="100"
+      width="120"
       align="center"
       prop="unit"
     ></el-table-column>
@@ -145,18 +137,21 @@ function formatterFinishRate(row, column, cellValue, index) {
 /* https://blog.csdn.net/m0_50914413/article/details/119108225 */
 .el-table tr {
   pointer-events: none;
+  letter-spacing: 2px;
 }
 /* 表格列头样式 */
 .el-table__header-wrapper .el-table_1_column_1.is-leaf.el-table__cell {
   background-color: #3d83c2;
 }
-/*表格列头第一行背景颜色及字体颜色*/
+/*表格列头第二行背景颜色及字体颜色*/
 table > thead > tr:nth-child(2) {
   color: #000;
   background-color: #ced9ea;
+  height: 80px;
 }
-/*表格列头第二行背景颜色及字体颜色*/
+/*表格列头第一行背景颜色及字体颜色*/
 table > thead > tr:nth-child(1) .el-table__cell {
+  height: 80px;
   color: #fff;
   background-color: #3d83c2 !important;
 }
