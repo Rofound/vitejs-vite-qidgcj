@@ -6,7 +6,7 @@ const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: '/6',
       name: 'home',
       meta: {
         title: '六、隐患整改',
@@ -14,7 +14,7 @@ const router = createRouter({
       component: HiddenDangerRectification,
     },
     {
-      path: '/WorkTracking',
+      path: '/7',
       name: 'WorkTracking',
       meta: {
         title: '七、重点/专项/重大隐患工作跟踪',

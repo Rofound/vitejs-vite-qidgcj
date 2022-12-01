@@ -1,13 +1,15 @@
 <script setup>
 import { ref, nextTick } from 'vue';
+import Axios from "axios";
+import dlv from "dlv";
 
-const months = getMonths();
+const monthsLabel = getMonthsLabel();
 const tableData = ref(null);
-const table = ref(null);
+const table = ref(null); // ref
 
 getTableData();
 
-function getMonths() {
+function getMonthsLabel() {
   const monthsForChinese = [
     '一',
     '二',
@@ -28,45 +30,23 @@ function getMonths() {
   });
   return months;
 }
-function getTableData() {
-  tableData.value = [
-    {
-      unit: '森森森森',
-      一月: '1',
-      二月: '2',
-      三月: '2',
-      四月: '2',
-      五月: '2',
-      六月: '2',
-      七月: '2',
-      八月: '2',
-      九月: '2',
-      十月: '2',
-      十一月: '2',
-      十二月: '2',
-      finishRate: 100,
-    },
-    {
-      unit: '森森森森',
-      一月: '1',
-      二月: '2',
-      三月: '2',
-      四月: '2',
-      五月: '2',
-      六月: '2',
-      七月: '2',
-      八月: '2',
-      九月: '2',
-      十月: '2',
-      十一月: '2',
-      十二月: '2',
-      finishRate: 98,
-    },
-  ];
+async function getTableData() {
+  const params = {
+    key: "0Zb288be183072479ab06f229075cd5c49", //API Key
+    request: JSON.stringify({
+      "conditionList": [{pageSize: -1,}],
+      useFieldAliasName: true
+    })
+  }
+  const res = await Axios({
+    url: "https://table.cmpo1914.com/p/webapi/table_query/0Z5j5jW9bqKSfNs", // https://table.cmpo1914.com/p/webapi/table_query/{{tableId}}
+    params: params
+  })
+  tableData.value = dlv(res, 'data.result.recordList', []);
 }
 
 function handleCellStyle({ row, column, rowIndex, columnIndex }) {
-  if (column.property === 'finishRate') {
+  if (column.property === 'okRate') {
     // 处理整改率字体颜色
     if (row[column.property] < 100) {
       return {
@@ -97,20 +77,20 @@ function formatterFinishRate(row, column, cellValue, index) {
     ></el-table-column>
     <el-table-column label="月度" align="center">
       <el-table-column
-        v-for="month in months"
+        v-for="(month, index) in monthsLabel"
         :label="month"
-        :prop="month"
+        :prop="'month'+ (index+1)"
         align="center"
       ></el-table-column>
     </el-table-column>
     <el-table-column label="总计" align="center">
-      <el-table-column label="总计" align="center"></el-table-column>
-      <el-table-column label="完成整改" width="120" align="center">
+      <el-table-column label="总计" align="center" prop="total"></el-table-column>
+      <el-table-column label="完成整改" width="120" align="center" prop="ok">
       </el-table-column>
       <el-table-column
         label="整改率"
         align="center"
-        prop="finishRate"
+        prop="okRate"
         :formatter="formatterFinishRate"
       >
       </el-table-column>
