@@ -1,13 +1,18 @@
 <script setup>
-import { ref, nextTick } from 'vue';
+import { ref, nextTick, onBeforeUnmount } from 'vue';
 import Axios from "axios";
 import dlv from "dlv";
+import {refreshListen} from "../utils/refreshListen";
 
 const monthsLabel = getMonthsLabel();
 const tableData = ref(null);
 const table = ref(null); // ref
 
 getTableData();
+
+refreshListen(() => {
+  getTableData()
+})
 
 function getMonthsLabel() {
   const monthsForChinese = [
@@ -42,7 +47,9 @@ async function getTableData() {
     url: "https://table.cmpo1914.com/p/webapi/table_query/0Z5j5jW9bqKSfNs", // https://table.cmpo1914.com/p/webapi/table_query/{{tableId}}
     params: params
   })
-  tableData.value = dlv(res, 'data.result.recordList', []);
+  const result = dlv(res, 'data.result.recordList', [])
+  if (JSON.stringify(tableData.value) == JSON.stringify(result)) return
+  tableData.value = result
 }
 
 function handleCellStyle({ row, column, rowIndex, columnIndex }) {

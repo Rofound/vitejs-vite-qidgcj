@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import HiddenDangerRectification from '../components/HiddenDangerRectification.vue';
 import WorkTracking from '../components/WorkTracking.vue';
+import SafeCulturePropaganda from '../components/SafeCulturePropaganda.vue';
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -20,6 +21,14 @@ const router = createRouter({
         title: '七、重点/专项/重大隐患工作跟踪',
       },
       component: WorkTracking,
+    },
+    {
+      path: '/8',
+      name: 'safeCulturePropaganda',
+      meta: {
+        title: '',
+      },
+      component: SafeCulturePropaganda,
     },
   ],
 });
