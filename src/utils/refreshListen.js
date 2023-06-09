@@ -1,5 +1,5 @@
 export function refreshListen(fn) {
-  setInterval(() => {
+  return setInterval(() => {
     fn && fn();
     console.clear()
   }, 3e3)
