@@ -40,7 +40,7 @@ export default defineConfig({
   },
   ...(() => {
     if (isBuild) return {
-      base: "https://table.cmpo1914.com/web/0Z5j5jDGcOArp4i/file"
+      base: "https://table.cmpo1914.com/web/0Z5j5jDXvdqSD8K/file"
     }
   })()
 });
