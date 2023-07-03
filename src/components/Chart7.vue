@@ -29,7 +29,8 @@ export default {
     async refreshData() {
       const date = new Date
       const year = date.getFullYear()
-      const month = date.getMonth()
+      let month = date.getMonth()
+      month = month == 0? 1: month
       let res = await fetch(`https://table.cmpo1914.com/p/webapi/request/0Z5jwLh5kaep9/getOtherSafeManagementList?year=${year}&month=${month}`)
       res = await res.json()
       let data = res.data

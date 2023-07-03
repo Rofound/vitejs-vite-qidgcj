@@ -57,6 +57,11 @@ const map1 = [
 export default {
   name: "Chart6",
   components: {BasicArrowHeader},
+  data () {
+    return {
+
+    }
+  },
   async mounted () {
 
     var dom = this.$el.querySelector('#myChart')
@@ -66,30 +71,55 @@ export default {
     });
 
     await this.refreshData()
-    this.refreshClearId = refreshListen(this.refreshData)
+    // this.refreshClearId = refreshListen(this.refreshData)
+    this.refreshClearId = refreshListen(async () => {
+      if (JSON.stringify(this.cacheData) !== JSON.stringify(await this.getData())) {
+        location.reload()
+      }
+
+    })
+    window.addEventListener('resize', () => {
+      location.reload()
+    });
+    console.log(this.myChart)
+
+    console.log()
   },
   methods: {
+    async getData() {
+
+      let res = await fetch(`https://table.cmpo1914.com/p/webapi/request/0Z5jwLh5kaep9/getSafeManagementRateList?year=${this.year}&month=${this.month}&orgName=${this.orgNames[0]}`)
+      res = await res.json()
+      let data = res.data
+      this.cacheData = data
+      return data
+    },
     async refreshData () {
       const date = new Date
       const year = date.getFullYear()
-      const month = date.getMonth()
+      let month = date.getMonth()
+      month = month == 0? 1: month
       const orgNames = this.$route.query.orgNames.split(',')
-      let res = await fetch(`https://table.cmpo1914.com/p/webapi/request/0Z5jwLh5kaep9/getSafeManagementRateList?year=${year}&month=${month}&orgName=${orgNames[0]}`)
-      res = await res.json()
-      let data = res.data
+      this.orgNames = orgNames
+      this.year = year
+      this.month = month
 
-      function getOption(orgName, getArr) {
-        var option;
-        const textStyle = {
-          color: '#000',
-          fontWeight: 'bolder',
-          fontSize: 18
-        };
-        option = {
+      let data = await this.getData()
+
+
+      const textStyle = {
+        color: '#000',
+        fontWeight: 'bolder',
+        fontSize: 18
+      };
+
+      if (!this.refreshData.init) {
+        this.refreshData.init = true
+        this.myChart.setOption({
           backgroundColor: '#dfeafb',
           tooltip: {},
           title: {
-            text: orgName,
+            text: orgNames[0],
             left: 'center',
             textStyle: {
               fontSize: 40,
@@ -100,6 +130,13 @@ export default {
             show: false,
             data: ['Allocated Budget', 'Actual Spending']
           },
+          })
+      }
+
+      function getOption(orgName, getArr) {
+        var option;
+
+        option = {
           radar: {
             center: ['50%', '55%'],
             // shape: 'circle',
@@ -187,11 +224,10 @@ export default {
         return arr
       }
 
-      function getArr(item) {
+      function getArr(item = data[0]) {
         const result = []
         const keysArr= Object.keys(item)
         keysArr.forEach(key => {
-          (key)
           const target = map1.find(i => i.key == key)
           if (!target) return
           target.value = toFixed(item[key] * 100)
@@ -211,7 +247,7 @@ export default {
       // this.myChart1.setOption(getOption(orgNames[1], () => getArr(data1[0])));
 
 
-      window.addEventListener('resize', this.myChart.resize);
+
       // window.addEventListener('resize', this.myChart1.resize);
     }
   },

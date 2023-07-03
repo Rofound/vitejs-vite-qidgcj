@@ -24,7 +24,7 @@ export default {
   },
   methods: {
     async refreshData() {
-      let res = await fetch('https://table.cmpo1914.com/p/webapi/request/0Z5jwLh5kaep9/getSafeManagementList?month=6&year=2023')
+      let res = await fetch('https://table.cmpo1914.com/p/webapi/request/0Z5jwLh5kaep9/getSafeManagementList')
       res = await res.json()
       let data = res.data
       this.setOption(data)
