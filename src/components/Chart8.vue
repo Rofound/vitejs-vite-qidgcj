@@ -55,7 +55,7 @@ export default {
       let data = res.data
 
 
-      let res1 = await fetch(`https://table.cmpo1914.com/p/webapi/request/0Z5jwLh5kaep9/getOtherSafeManagementCompList?year=${year}&month=${month}`)
+      let res1 = await fetch(`https://table.cmpo1914.com/p/webapi/request/0Z5jwLh5kaep9/getOtherSafeManagementCycleList??year=${year}&month=${month}`)
       res1 = await res1.json()
       let data1 = res1.data
 

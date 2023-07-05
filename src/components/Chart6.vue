@@ -86,9 +86,8 @@ export default {
     console.log()
   },
   methods: {
-    async getData() {
-
-      let res = await fetch(`https://table.cmpo1914.com/p/webapi/request/0Z5jwLh5kaep9/getSafeManagementRateList?year=${this.year}&month=${this.month}&orgName=${this.orgNames[0]}`)
+    async getData(orgName = this.orgNames[0]) {
+      let res = await fetch(`https://table.cmpo1914.com/p/webapi/request/0Z5jwLh5kaep9/getSafeManagementRateList?year=${this.year}&month=${this.month}&orgName=${orgName}`)
       res = await res.json()
       let data = res.data
       this.cacheData = data
