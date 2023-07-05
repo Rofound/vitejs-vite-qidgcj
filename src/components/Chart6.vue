@@ -5,9 +5,9 @@
 <!--      <div class="h1-desc-before"></div>-->
 <!--      <div class="h1-desc">对比：安全管理基础情况海南公司较弱，周期安全管理情况和安全管理综合评价有提升的空间（安全文化管理未得分）。</div>-->
 <!--    </div>-->
-    <div class="row">
-      <div class="col">
-        <div id="myChart" style="height: calc(100vh - 270px);padding-top: 12px;box-sizing: border-box">
+    <div class="chart6-row">
+      <div class="chart6-col" v-for="(a, index) in city" style="width: 350px;flex:unset">
+        <div :id="'myChart' + index" style="height: 280px;padding-top: 12px;box-sizing: border-box">
         </div>
       </div>
 <!--      <div class="col">-->
@@ -58,200 +58,214 @@ export default {
   name: "Chart6",
   components: {BasicArrowHeader},
   data () {
+    const _citys = this.$route.query.orgNames && this.$route.query.orgNames.split(',')
     return {
-
+      city: _citys || ['上海公司', '东北公司', '中原公司', '佛山公司', '北京公司', '协同事业部', '四川公司', '天津公司', '安徽公司', '山东公司', '广州公司', '江苏公司', '江西公司', '浙江公司', '海南公司', '深圳公司', '湖北公司', '湖南公司', '福建公司', '积余南航', '积余新中', '积余汇勤', '积余设施', '重庆公司', '高校服务'],
+      cacheData: {}
     }
   },
   async mounted () {
 
-    var dom = this.$el.querySelector('#myChart')
-    this.myChart = echarts.init(dom, null, {
-      renderer: 'canvas',
-      useDirtyRect: false
-    });
+    this.city.map(async (item, index) => {
 
-    await this.refreshData()
-    // this.refreshClearId = refreshListen(this.refreshData)
-    this.refreshClearId = refreshListen(async () => {
-      if (JSON.stringify(this.cacheData) !== JSON.stringify(await this.getData())) {
-        location.reload()
-      }
+      var dom = this.$el.querySelector('#myChart' + index)
+      this['myChart' + index] = echarts.init(dom, null, {
+        renderer: 'canvas',
+        useDirtyRect: false
+      });
+      await this.refreshData([item], index)
 
+      this.refreshClearId = refreshListen(async () => {
+        console.log(JSON.stringify(this.cacheData[index]) , JSON.stringify(await this.getData(item, index)))
+        if (JSON.stringify(this.cacheData[index]) !== JSON.stringify(await this.getData(item, index))) {
+          location.reload()
+        }
+      })
     })
+    // this.refreshClearId = refreshListen(this.refreshData)
     window.addEventListener('resize', () => {
       location.reload()
     });
-    console.log(this.myChart)
-
-    console.log()
   },
   methods: {
-    async getData(orgName = this.orgNames[0]) {
+    async getData(orgName, index) {
       let res = await fetch(`https://table.cmpo1914.com/p/webapi/request/0Z5jwLh5kaep9/getSafeManagementRateList?year=${this.year}&month=${this.month}&orgName=${orgName}`)
       res = await res.json()
       let data = res.data
-      this.cacheData = data
+      this.cacheData[index] = data
       return data
     },
-    async refreshData () {
-      const date = new Date
-      const year = date.getFullYear()
-      let month = date.getMonth()
-      month = month == 0? 1: month
-      const orgNames = this.$route.query.orgNames.split(',')
-      this.orgNames = orgNames
-      this.year = year
-      this.month = month
+    async refreshData (orgNames, index) {
+      return new Promise(async r => {
+        const myChart = this['myChart' + index]
+        const date = new Date
+        const year = date.getFullYear()
+        let month = date.getMonth()
+        month = month == 0? 1: month
+        // const orgNames = this.$route.query.orgNames.split(',')
+        this.year = year
+        this.month = month
 
-      let data = await this.getData()
+        let data = await this.getData(orgNames[0], index)
 
 
-      const textStyle = {
-        color: '#000',
-        fontWeight: 'bolder',
-        fontSize: 18
-      };
-
-      if (!this.refreshData.init) {
-        this.refreshData.init = true
-        this.myChart.setOption({
-          backgroundColor: '#dfeafb',
-          tooltip: {},
-          title: {
-            text: orgNames[0],
-            left: 'center',
-            textStyle: {
-              fontSize: 40,
-              lineHeight: 50
-            }
-          },
-          legend: {
-            show: false,
-            data: ['Allocated Budget', 'Actual Spending']
-          },
-          })
-      }
-
-      function getOption(orgName, getArr) {
-        var option;
-
-        option = {
-          radar: {
-            center: ['50%', '55%'],
-            // shape: 'circle',
-            indicator: getArr().map(i=> {
-              i.max = 100
-              if (i.name.includes('得分百分比')) return i
-              i.name = i.name + '\n得分百分比'
-              return i
-            }),
-            splitArea: {
-              areaStyle: {
-                color: 'transparent'
-              }
-            },
-            splitLine: {
-              lineStyle: {
-                width: 2,
-                color: '#d5deea'
-              }
-            },
-            axisLabel: {
-              show: true,
-              color: function (value, index) {
-                if (!window.obj) {
-                  window.obj = {};
-                }
-                let result = 'transparent';
-                if (!window.obj[index]) { // 只显示1列
-                  window.obj[index] = true;
-                  result = 'black';
-                }
-                return result;
-              },
-              fontSize: 18,
-              fontWeight: 'bolder',
-              formatter: (i) => i + '%'
-            },
-            axisName: {
-              color: '#000',
-              fontSize: 18,
-              fontWeight: 'bolder'
-            },
-            axisLine: {
-              show: false,
-            }
-          },
-          series: [
-            {
-              name: 'Budget vs spending',
-              type: 'radar',
-              symbolSize: 0,
-              data: [
-                {
-                  value: getArr().map(i => i.value),
-                  name: orgName,
-                  itemStyle: {
-                    color: '#6294e4'
-                  },
-                  lineStyle: {
-                    width: 5,
-                    shadowColor: '#000',
-                    shadowBlur: 8
-                  },
-                  label: {}
-                }
-              ]
-            }
-          ]
+        const textStyle = {
+          color: '#000',
+          fontWeight: 'bolder',
+          fontSize: 18
         };
-        return option
-      }
+        const fontSize= 12
 
-      function toFixed(val, size = 2) {
-        val = Number(val)
-        if (isNaN(val)) {
-          val = 0
+        if (!this.refreshData['myChart' + index]) {
+          this.refreshData['myChart' + index] = true
+          myChart.setOption({
+            backgroundColor: '#dfeafb',
+            tooltip: {},
+            title: {
+              text: orgNames[0],
+              left: 'center',
+              textStyle: {
+                fontSize: 23,
+                lineHeight: 50
+              }
+            },
+            legend: {
+              show: false,
+              data: ['Allocated Budget', 'Actual Spending']
+            },
+          })
         }
-        return val.toFixed(size)
-      }
 
-      function toSort(arr) {
-        arr.sort((a, b) => {
-          return b.value - a.value
-        })
-        return arr
-      }
+        function getOption(orgName, getArr, _index) {
+          var option;
 
-      function getArr(item = data[0]) {
-        const result = []
-        const keysArr= Object.keys(item)
-        keysArr.forEach(key => {
-          const target = map1.find(i => i.key == key)
-          if (!target) return
-          target.value = toFixed(item[key] * 100)
-          result.push(target)
-        })
-        return map1
-        const length = 25
-        // return Array.from({ length }, (i) => {
-        //   return {
-        //     value: toFixed(Math.random() * 100),
-        //     name: '江苏公司'
-        //   }
-        // })
-      }
+          option = {
+            radar: {
+              center: ['50%', '55%'],
+              // shape: 'circle',
+              indicator: getArr().map(i=> {
+                i.max = 100
+                if (i.name.includes('得分百分比')) return i
+                i.name = i.name + '\n得分百分比'
+                return i
+              }),
+              splitArea: {
+                areaStyle: {
+                  color: 'transparent'
+                }
+              },
+              splitLine: {
+                lineStyle: {
+                  width: 2,
+                  color: '#d5deea'
+                }
+              },
+              axisLabel: {
+                show: true,
+                color: function (value, index) {
+                  if (!window.obj) {
+                    window.obj = {};
+                  }
+                  if (!window.obj[_index]) {
+                    window.obj[_index] = {};
+                  }
+                  let result = 'transparent';
+                  if (!window.obj[_index][index]) { // 只显示1列
+                    window.obj[_index][index] = true;
+                    result = 'black';
+                  }
+                  return result;
+                },
+                fontSize: fontSize,
+                fontWeight: 'bolder',
+                formatter: (i) => i + '%'
+              },
+              axisName: {
+                color: '#000',
+                fontSize: fontSize,
+                fontWeight: 'bolder'
+              },
+              axisLine: {
+                show: false,
+              },
+              radius: 60
+            },
+            series: [
+              {
+                name: 'Budget vs spending',
+                type: 'radar',
+                symbolSize: 0,
+                data: [
+                  {
+                    value: getArr().map(i => i.value),
+                    name: orgName,
+                    itemStyle: {
+                      color: '#6294e4',
+                      fontSize: 12
+                    },
+                    lineStyle: {
+                      width: 3,
+                      shadowColor: '#000',
+                      shadowBlur: 8
+                    },
+                    label: {}
+                  }
+                ]
+              }
+            ]
+          };
+          return option
+        }
 
-      this.myChart.setOption(getOption(orgNames[0], () => getArr(data[0])));
-      // this.myChart1.setOption(getOption(orgNames[1], () => getArr(data1[0])));
+        function toFixed(val, size = 2) {
+          val = Number(val)
+          if (isNaN(val)) {
+            val = 0
+          }
+          return val.toFixed(size)
+        }
+
+        function toSort(arr) {
+          arr.sort((a, b) => {
+            return b.value - a.value
+          })
+          return arr
+        }
+
+        function getArr(item = data[0]) {
+          const result = []
+          const keysArr= Object.keys(item)
+          keysArr.forEach(key => {
+            const target = map1.find(i => i.key == key)
+            if (!target) return
+            target.value = toFixed(item[key] * 100)
+            result.push(target)
+          })
+          return map1
+          const length = 25
+          // return Array.from({ length }, (i) => {
+          //   return {
+          //     value: toFixed(Math.random() * 100),
+          //     name: '江苏公司'
+          //   }
+          // })
+        }
+
+        myChart.setOption(getOption(orgNames[0], () => getArr(data[0]), index));
+        // this.myChart1.setOption(getOption(orgNames[1], () => getArr(data1[0])));
 
 
 
-      // window.addEventListener('resize', this.myChart1.resize);
+        // window.addEventListener('resize', this.myChart1.resize);
+        r()
+      })
     }
   },
   beforeRouteLeave () {
-    this.myChart.dispose()
+    this.city.forEach((in1, index) => {
+      this['myChart' + index].dispose()
+    })
+
     clearInterval(this.refreshClearId)
   }
 }
@@ -306,13 +320,18 @@ export default {
   margin-bottom: 20px;
   font-size: 24px;
 }
-.row {
+.chart6-row {
   display: flex;
+
+  flex-wrap: wrap;
 }
-.row .col + .col{
-  margin-left: 50px;
+.chart6-col {
+  margin-left: 10px;
 }
-.row .col {
+.chart6-row .chart6-col + .chart6-col{
+  /*margin-left: 10px;*/
+}
+.chart6-row .chart6-col {
   flex: 1;
 }
 </style>
