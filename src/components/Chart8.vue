@@ -1,10 +1,6 @@
 <template>
   <div class="dashed-card">
-    <BasicArrowHeader title="月度排序（前后两位多边形对比图）" :blockStyle="{width: '97%'}"></BasicArrowHeader>
-    <div class="h1-desc-box">
-      <div class="h1-desc-before"></div>
-      <div class="h1-desc">对比：安全管理基础情况海南公司较弱，周期安全管理情况和安全管理综合评价有提升的空间（安全文化管理未得分）。</div>
-    </div>
+    <BasicArrowHeader title="月度排序（非物业管理单位--降序）" :blockStyle="{width: '97%'}"></BasicArrowHeader>
     <div class="row">
       <div class="col">
         <div id="myChart" style="height: calc(100vh - 270px);padding-top: 12px;box-sizing: border-box">
@@ -161,7 +157,7 @@ export default {
       };
       option1 = {
         title: {
-          text: '安全管理综合评价（25分）',
+          text: '周期安全管理情况（25分）',
           left: 'center',
           textStyle: {
             fontSize: 30
@@ -363,7 +359,7 @@ export default {
   display: flex;
 }
 .row .col + .col{
-  margin-left: 50px;
+  margin-left: 0px;
 }
 .row .col {
   flex: 1;
