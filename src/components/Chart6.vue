@@ -1,6 +1,6 @@
 <template>
   <div class="dashed-card">
-    <BasicArrowHeader title="月度排序（前后两位多边形对比图）" :blockStyle="{width: '97%'}"></BasicArrowHeader>
+    <BasicArrowHeader title="月度排序（多边形对比图）" :blockStyle="{width: '97%'}"></BasicArrowHeader>
 <!--    <div class="h1-desc-box">-->
 <!--      <div class="h1-desc-before"></div>-->
 <!--      <div class="h1-desc">对比：安全管理基础情况海南公司较弱，周期安全管理情况和安全管理综合评价有提升的空间（安全文化管理未得分）。</div>-->
@@ -276,8 +276,9 @@ export default {
     }
   },
   beforeRouteLeave () {
+
     this.city.forEach((in1, index) => {
-      this['myChart' + index].dispose()
+      this['myChart' + index] && this['myChart' + index].dispose()
     })
 
     clearInterval(this.refreshClearId)
@@ -292,6 +293,11 @@ export default {
       return `calc((100vh - 200px) / ${this.$route.query.heightNum || 2} - 10px)`
     }
   },
+  watch: {
+    $route() {
+      location.reload()
+    }
+  }
 }
 </script>
 
